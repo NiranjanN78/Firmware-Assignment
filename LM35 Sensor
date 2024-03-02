@@ -1,0 +1,66 @@
+#include<Arduino.h> //Including the Arduino Library
+
+const int LM35_pin=A0; //Analog pin for the LM35 sensor
+const int LED_pin=10;  //Defining the LED pin number
+
+int temperature,blinkTime; //Defining variables to store the temperature value and the blinking time of the LED
+
+void setup()
+{
+Serial.begin(9600); //Baud rate for serial communication
+
+pinMode(LED_pin,OUTPUT); //Setting the LED_pin as an output
+}
+
+void loop()
+{
+int temp_sensor_value = analogRead(LM35_pin); //The variable temp_sensor_value stores the analog value from the LM35 sensor
+
+//ADC value is converted into degree Celsius using the formula (5 * analogvalue *100)/1024 and also the LM35 output is 10mV per degree celsius
+temperature = temp_sensor_value * 0.488;    
+
+//To print the temperature value on the serial monitor
+Serial.print("Temperature : ");
+Serial.print(temperature);
+Serial.println("deg Celsius");
+
+if(temperature < 30) //To check if temperature is less than 30 deg celsius
+{
+blinkTime = 250; // Let the LED blink every 250ms
+}
+else
+{
+blinkTime=500; //Let the LED blink every 500ms if it is greater than 30 deg celsius
+}
+
+blinkLED(blinkTime); //A function is called to blink the LED 
+}
+
+//blinkLED function
+void blinkLED(unsigned long interval)
+{
+static unsigned long previoustime=0;
+static bool LED_state = LOW;
+static unsigned long counter = 0;//counter is used to count the time of the ledblink
+
+counter++;
+
+if(counter >= interval/20) {  //The counter variable is used to track the elapsed time in approximate 20ms increments
+counter=0;
+
+//To toggle the LED states 
+if(LED_state == LOW)
+{
+digitalWrite(LED_pin,HIGH);
+LED_state=HIGH;
+}
+else
+{
+digitalWrite(LED_pin,LOW);
+LED_state=LOW;
+}
+}
+}
+                                                                                                                        
+
+
